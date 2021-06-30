@@ -1,0 +1,176 @@
+# %% [code] {"execution":{"iopub.status.busy":"2021-06-24T06:30:23.704698Z","iopub.execute_input":"2021-06-24T06:30:23.707063Z","iopub.status.idle":"2021-06-24T06:30:25.474634Z"},"jupyter":{"outputs_hidden":true}}
+packages = c("tidyverse") 
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+
+# %% [code] {"execution":{"iopub.status.busy":"2021-06-24T06:37:46.891526Z","iopub.execute_input":"2021-06-24T06:37:46.893300Z","iopub.status.idle":"2021-06-24T06:37:46.915995Z"}}
+data<-read.csv("../input/factors-affecting-campus-placement/Placement_Data_Full_Class.csv")
+class(data) #showing which type of class
+dim(data) #for showing no. of col. & rows in dataset
+View(data) #code for displaying data through dataframe
+summary(data) #showing summary 
+
+datatypes<-str(data)
+print(datatypes)
+#head(data, n = 20) 
+names(data)
+data <- rename( data, serialNo = sl_no,
+                secEducationPercent = ssc_p,  
+                secBoardOfEducation = ssc_b, 
+                higherSecEducationPercent = hsc_p, 
+                higherSecBoardofEducation = hsc_b, 
+                highSecSepecialization = hsc_s, 
+                degreePercent = degree_p, 
+                degreeType = degree_t, 
+                workExp = workex, 
+                employTestPercent = etest_p, 
+                mbaSpecialization = specialisation, 
+                mbaPercent = mba_p)  #renaming the names of the col. 
+
+names(data) #printing the names of col.
+data[is.na(data)] <- 0  #Replace NAs in Salary column with 0
+
+m<-count(filter(data,gender=="M"))
+f<-count(filter(data,gender=="F"))
+m<-as.integer(m)
+f<-as.integer(f)
+mf<-c(m,f)
+piepercent<- round(100*mf/sum(mf), 1) #mf for printing simply total no.
+colors<-c("purple","green")
+pdf("1st.pdf") 
+pie(mf, labels = piepercent, main = "Pie chart for total no. of Male & Female Students",col = colors)
+legend("topright", c("M","F"), cex = 0.8,
+       fill = colors)
+dev.off() 
+
+
+names(data)
+x <- c(data$secEducationPercent)
+x1<-as.numeric(x)
+#x1<-as.numeric(x)
+#y1<-as.numeric(y)
+#xy<-c(x1,y1)
+#print(x1)
+#print(y1)
+pdf("2nd.pdf") 
+hist(x1,xlab = "Percentile",ylab="Students",main="Histogram for marks of SSC",col = "black",border = "red")
+summary(data$secEducationPercent)
+#x3<-count(filter(data,secEducationPercent>40 & secEducationPercent<45 ))
+#print(x3)
+dev.off()
+
+names(data)
+x <- c(data$higherSecEducationPercent)
+x1<-as.numeric(x)
+#x1<-as.numeric(x)
+#y1<-as.numeric(y)
+#xy<-c(x1,y1)
+#print(x1)
+#print(y1)
+pdf("3rd.pdf")
+hist(x1,xlab = "Percentile",ylab="Students",main="Histogram for marks of HSC",col = "yellow",border = "red")
+summary(data$higherSecEducationPercent)
+#x3<-count(filter(data,higherSecEducationPercent>40 & higherSecEducationPercent<45 ))
+#print(x3)
+dev.off()
+
+
+names(data)
+pdf("4th.pdf")
+dataVis <- filter(data, salary != 0) #filter out 0 as data with 0 values have no placement yet
+ggplot(dataVis, aes(salary, gender)) + geom_boxplot()
+dev.off()
+
+library(scales)
+#visualizing total no. of males and females who has been salaried
+pdf("5th.pdf")
+ggplot(dataVis, aes(gender)) +  geom_bar(fill = "purple") + ggtitle("Total males and females salaried")
+x <- count(filter(data ,gender =="M" & salary != 0))
+#print(x)
+y <- count(filter(data ,gender =="F" & salary != 0))
+#print(y)
+dev.off()
+
+
+#visualizing total no. of males and females who has not been salaried
+dataVis1 <- filter(data, salary == 0) #filter out 0 as data with 0 values have no placement yet
+pdf("6th.pdf")
+ggplot(dataVis1, aes(gender,fill="blue")) + geom_bar(fill = "red") + ggtitle("Total males and females not salaried")
+x <- count(filter(data ,gender =="M" & salary == 0))
+#print(x)
+y <- count(filter(data ,gender =="F" & salary == 0))
+#print(y)
+dev.off()
+
+# x<-count(filter(data ,workExp =="Yes"))
+# x1<-as.integer(x)
+# print(x1)
+# y<-count(filter(data ,workExp =="No"))
+# y1<-as.integer(y)
+# print(y1)
+pdf("7th.pdf")
+ggplot(data, aes(workExp)) + geom_bar(fill = "orange", color = "white") +ggtitle("Graph for work-experience")# visualizing workexperince 
+dev.off()
+
+pdf("8th.pdf")
+ggplot(data, aes(degreeType)) + geom_bar(fill = "yellow", color = "white")+ggtitle("Graph for Degree-type")# visualizing workexperince 
+dev.off()
+
+pdf("9th.pdf")
+ggplot(data, aes(mbaSpecialization)) + geom_bar(fill = "green", color = "white")+ggtitle("Graph for MBA Specialization")
+dev.off()
+
+pdf("10th.pdf")
+ggplot(data, aes(secBoardOfEducation)) + geom_bar(fill = "blue", color = "white")+ggtitle("Graph for SSC board")
+dev.off()
+
+pdf("11th.pdf")
+ggplot(data, aes(higherSecBoardofEducation)) + geom_bar(fill = "purple", color = "white")+ggtitle("Graph for HSC board")
+dev.off()
+
+pdf("12th.pdf")
+ggplot(data, aes(mbaSpecialization, fill = status)) + geom_bar() +ggtitle("Graph for Placed and not placed students with MBA Specialization")
+dev.off()
+
+pdf("13th.pdf")
+ggplot(data, aes(degreeType, fill = status)) + geom_bar() + facet_wrap(~status)+ggtitle("Graph for Placed and not placed students with Degree type")
+dev.off()
+
+pdf("14th.pdf")
+ggplot(data, aes(workExp, fill = status)) + geom_bar() + facet_grid(rows = vars(status))+ggtitle("Graph for Placed and not placed students with Work-experience")
+dev.off()
+
+pdf("15th.pdf")
+ggplot(data, aes(secBoardOfEducation, fill = status)) + geom_bar(position = "dodge")+ggtitle("Graph for Placed and not placed students with SSC board")
+dev.off()
+
+pdf("16th.pdf")
+ggplot(data, aes(higherSecBoardofEducation, fill = status)) + geom_bar(position = "dodge")+ggtitle("Graph for Placed and not placed students with HSC board")
+dev.off()
+
+pdf("17th.pdf")
+ggplot(dataVis, aes(gender, salary, fill = mbaSpecialization)) + geom_col() +
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                                   size=14, angle=45),
+        axis.text.y = element_text(face="bold", color="#993333", 
+                                   size=14, angle=45)) +
+  scale_y_continuous(breaks = seq(0,30000000, 5000000)) +
+    ggtitle("Graph for Salary based on MBA Specialization")
+dev.off()
+
+pdf("18th.pdf")
+ggplot(data, aes(degreePercent, fill = gender)) + geom_histogram(binwidth = 5) +
+  xlab("Percent %") +
+  ylab("NO. of students") +
+  scale_y_continuous(limits = c(0,70), breaks = seq(0,70,10))+
+ggtitle("Histogram for Percentage based on their Gender")
+dev.off()
+
+pdf("19th.pdf")
+ggplot(data,aes(gender)) + geom_bar(aes(fill=degreeType), position = 'dodge') +
+  ggtitle("Gender vs Degree") #+ theme(axis.text.x  = element_text(angle=90, hjust = 1))
+dev.off()
