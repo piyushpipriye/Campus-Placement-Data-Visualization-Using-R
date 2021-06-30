@@ -2,8 +2,8 @@
 
 
 <b>Campus-Placement-Data-Visualization-Using-R</b>
-![](Capture.PNG)
+![](Capture.png)
 
-![](Capture 2.PNG)
+![](Capture 2.png)
 
-![](Capture 3.PNG)
+![](Capture 3.png)
